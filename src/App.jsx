@@ -1,35 +1,70 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
+// import "./App.css";
+import "./Custom.css";
 
-function App() {
-  const [count, setCount] = useState(0)
 
+function App(){
+    // ✅ Input ke liye state
+  const [taskInput, setTaskInput] = useState("");
+  const [tasks, setTasks] = useState([]);
+
+  const addTask = () => {
+  if (!taskInput.trim()) return;  // agar input khali ho, kuch na kare
+  
+  const newTask = {
+    text: taskInput,
+    seconds: 0, // timer seconds
+    running: false // timer start/stop
+  };
+
+  setTasks([...tasks, newTask]); // existing tasks me naya add karo
+  setTaskInput("");                // input box ko clear karo
+  
+};
+
+ const deleteTask = (indexToDelete) => {
+   setTasks(tasks.filter((_, index) => index !== indexToDelete));
+ }
+
+ const toggleTimer = (index) => {
+  setTasks(tasks.map((task, i) => {
+    if (i === index) {
+      return { ...task, running: !task.running };
+    }
+    return task;
+  }));
+};
+
+  // 🖼️ Step 4: UI return
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="todo-container">
+    <h1 className="title">My To-Do Tracker</h1>
+
+    <div className="input-area">
+      <input type="text" id="taskInput" 
+      value={taskInput}
+      onChange={(e)=> setTaskInput(e.target.value)} placeholder="Add a new task..." />
+      <button id="addBtn" onClick={addTask}>Add</button>
+    </div>
+
+    <ul id="taskList" className="task-list">
+       {tasks.map((task, index) => (
+    <li key={index} className="task-item">{task.text}
+    <button
+        className={task.running ? "small stop-btn" : "small start-btn"}
+        onClick={() => toggleTimer(index)}
+      >
+        {task.running ? "Stop" : "Start"}
+      </button>
+    <button className="small delete-btn" onClick={() => deleteTask(index)}>
+        Delete
+      </button>
+    </li>
+  ))}
+    </ul>
+  </div>
+    
+  );
 }
 
-export default App
+export default App;
